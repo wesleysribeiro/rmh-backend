@@ -59,7 +59,7 @@ app.post('/signUp', (req, res) => {
 			senha: registerData.password,
 			dataNascimento: registerData.birthdate,
 			cpf: registerData.CPF,
-			restaurantes = []
+			restaurantes: []
 		})
 		try {
 			fs.writeFileSync('accounts.json', JSON.stringify(contas, null, 2))
@@ -155,6 +155,7 @@ app.get('/dishesData', (req, res) => {
 	const token = req.headers['x-access-token']
 	if(!token) return res.status(401).json({ auth: false, message: 'No token provided.' });	
 	//TODO
+
 })
 
 app.get('/restaurants', (req, res) => {
@@ -164,9 +165,20 @@ app.get('/restaurants', (req, res) => {
 })
 
 app.post('/restaurant', (req, res) => {
+	console.log('On POST restaurant')
 	const token = req.headers['x-access-token']
 	if(!token) return res.status(401).json({ auth: false, message: 'No token provided.' });
-	// TODO
+	console.log(req.body)
+	const account = retrieveUser(token);
+	console.log(account)
+	const restaurants = account.restaurantes;
+	restaurants.push(req.body);
+
+	console.log(restaurants)
+	console.log(contas)
+
+	fs.writeFileSync('accounts.json', JSON.stringify(contas, null, 2))
+	res.json({message: "Restaurante criado com sucesso!"})
 })
 
 app.listen(port, () => {
@@ -174,15 +186,20 @@ app.listen(port, () => {
 });
 
 function retrieveUser(token) {
-	const {email, senha} = parseToken(token);
+	console.log('on retrieve user')
+	const {email, password} = parseToken(token);
+	console.log('Email e senha: ' + email + ", " + password)
 	let account = undefined;
 
 	contas.forEach(conta => {
 		if(conta.email === email && conta.senha === password)
 		{
+			console.log('Cheguei aqui')
 			account = conta;
 		}
 	})
+
+	console.log(account)
 
 	return account;
 }

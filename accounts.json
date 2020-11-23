@@ -1,9 +1,26 @@
 [
   {
     "email": "ws.ht@hotmail.com",
-    "nome": "Marcelo Rossi",
+    "nome": "Administrador1233455",
     "senha": "1234",
-    "dataNascimento": "2222-02-21",
-    "cpf": "1043343332"
+    "dataNascimento": "1990-08-28",
+    "cpf": "104334333299ewewthisisfuckingawsome",
+    "restaurantes": [
+      {
+        "name": "aaaaahfdfhsd",
+        "cep": "849389493",
+        "description": "fhudufhdufh"
+      },
+      {
+        "name": "aaaaahfdfhsd",
+        "cep": "849389493",
+        "description": "fhudufhdufh"
+      },
+      {
+        "name": "aaaaahf12343",
+        "cep": "849389493",
+        "description": "fhudufhdufh"
+      }
+    ]
   }
 ]
