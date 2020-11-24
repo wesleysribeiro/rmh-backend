@@ -20,6 +20,7 @@ fs.readFile('accounts.json', (err, data) => {
 const port = 3003
 
 app.post('/signIn', (req, res) => {
+	console.log('On method signIn /profileData')
 	const loginData = req.body;
 
 	console.log(loginData)
@@ -39,6 +40,7 @@ app.post('/signIn', (req, res) => {
 })
 
 app.post('/signUp', (req, res) => {
+	console.log('On method POST signUp')
 	const registerData = req.body;
 
 	console.log('Recebido um request com: ')
@@ -76,6 +78,7 @@ app.post('/signUp', (req, res) => {
 })
 
 app.post('/forgotPassword', (req, res) => {
+	console.log('On method post forgotPassword')
 	let msg = ""
 	let success = false;
 	console.log('Dados recebidos: ')
@@ -97,6 +100,7 @@ app.post('/forgotPassword', (req, res) => {
 })
 
 app.post('/profileData', (req, res) => {
+	console.log('On method post /profileData')
 	console.log(req.body)
 	const authCode = req.body.token;
 
@@ -124,6 +128,7 @@ app.post('/profileData', (req, res) => {
 })
 
 app.put('/profileData', (req, res) => {
+	console.log('On method put /profileData')
 	console.log(req.body)
 	const authCode = req.body.token;
 	const formData = req.body.form;
@@ -151,24 +156,78 @@ app.put('/profileData', (req, res) => {
 
 })
 
+app.post('/userReview', (req, res) => {
+	console.log('On method post /userReview')
+	const data = req.body;
+	let restaurante = findRestaurantByName(data.restaurant.name);
+
+	let prato = {}
+
+	try {
+
+		console.log(restaurante)
+		if(restaurante.pratos)
+		{
+			for(let i = 0; i < restaurante.pratos.length; i++)
+			{
+				prato = restaurante.pratos[i];
+				if(prato.nome === data.dish)
+				{
+					break;
+				}
+			}
+		}
+
+	}
+
+	catch(e)
+	{
+		res.json({success: false})
+	}
+
+	Object.assign(prato, 
+	{
+		note: data.note,
+		color: data.color,
+		taste: data.taste,
+		smell: data.smell,
+		texture: data.texture,
+		temperature: data.temperature,
+		general: data.general
+	})
+
+	fs.writeFileSync('accounts.json', JSON.stringify(contas, null, 2))
+	res.json({success: true})
+})
+
 app.get('/dishesData', (req, res) => {
+	console.log('On method GET /dishesData')
 	const token = req.headers['x-access-token']
 	if(!token) return res.status(401).json({ auth: false, message: 'No token provided.' });	
-	//TODO
-
 })
 
 app.get('/allRestaurants', (req, res) => {
+	console.log('On method GET /allRestaurants')
 	const restaurantes = [];
 	contas.forEach(conta => {
 		conta.restaurantes.forEach(restaurante => {
-			restaurantes.push(restaurante);
+			let dishes = []
+			if(restaurante.pratos) {
+				dishes = restaurante.pratos.map(prato => {
+					return prato.nome;
+				})
+			}
+			restaurantes.push({
+				name: restaurante.name, dishes
+			});
 		})
 	})
-	res.json(restaurantes)
+	console.log(restaurantes)
+	res.status(201).json(restaurantes)
 })
 
 app.get('/restaurants', (req, res) => {
+	console.log('On method GET restaurants')
 	const token = req.headers['x-access-token']
 	if(!token) return res.status(401).json({ auth: false, message: 'No token provided.' });	
 
@@ -224,5 +283,24 @@ function parseToken(token) {
 	return {
 		email,
 		password
+	}
+}
+
+function findRestaurantByName(name) {
+	let restaurante = {}
+	for(let i = 0; i < contas.length; i++)
+	{
+		const restaurantes = contas[i].restaurantes;
+		if(restaurantes)
+		{
+			for(let j = 0; j < restaurantes.length; j++)
+			{
+				restaurante = restaurantes[j]
+				if(restaurante.name === name)
+				{
+					return restaurante;
+				}
+			}
+		}
 	}
 }
