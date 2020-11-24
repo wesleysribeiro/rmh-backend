@@ -158,10 +158,20 @@ app.get('/dishesData', (req, res) => {
 
 })
 
+app.get('/allRestaurants', (req, res) => {
+	const restaurantes = [];
+	contas.forEach(conta => {
+		conta.restaurantes.forEach(restaurante => {
+			restaurantes.push(restaurante);
+		})
+	})
+	res.json(restaurantes)
+})
+
 app.get('/restaurants', (req, res) => {
 	const token = req.headers['x-access-token']
 	if(!token) return res.status(401).json({ auth: false, message: 'No token provided.' });	
-	// TODO
+
 })
 
 app.post('/restaurant', (req, res) => {
